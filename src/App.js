@@ -11,10 +11,10 @@ function getApiData(API_URL){
   return axios.get(API_URL + "menus").then((response)=> response.data)
 }
 
+
 function App() {
   const [menus, setMenus] = useState([]);
   const [menuName, setMenuName] = useState();
-
 
 
   function handleSubmit(e){
@@ -29,7 +29,39 @@ function App() {
         setMenuName("");
       })
         .catch(err => console.log(err)); 
+  }
 
+  function handleUpdate(e){
+    const menu_id = e.target.value;
+    const newStatus = e.target.checked;
+    axios.put(`http://localhost:3000/api/v1/menus/${menu_id}`, {
+      status: newStatus
+    }).then(response => {
+      const newMenus = menus.map((menu) => {
+        if (menu.id == menu_id){
+          return {...menu, status: newStatus}
+        }
+        return menu
+      });
+      setMenus(newMenus);
+    })
+  }
+
+  function handleDelete(e){
+    const menu_id = e.target.value;
+    axios.delete(`http://localhost:3000/api/v1/menus/${menu_id}`)
+    .then(response => {
+      const index = menus.findIndex((item)=>{
+        return item.id == response.data.id;
+      })
+    
+      const newMenus = [
+        ...menus.slice(0, index),
+        ...menus.slice(index + 1, menus.length)
+      ];
+      setMenus(newMenus);
+    })
+    .catch(err => console.log(err)); 
   }
 
   useEffect(() => {
@@ -44,9 +76,8 @@ function App() {
 
   return (
     <div className="App">
-      <MenuContextProvider>
         <h1> Menu </h1>
-        <Menus menus={menus}/>
+        <Menus menus={menus} updateFunction = {handleUpdate} deleteFunction = {handleDelete}/>
 
         <form className="post" onSubmit={(e) => handleSubmit(e)}>
            <input
@@ -57,7 +88,7 @@ function App() {
    
           <button type="submit">Create Post</button>
         </form>
-      </MenuContextProvider>
+
     </div>
   );
 }

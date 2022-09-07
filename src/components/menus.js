@@ -1,13 +1,10 @@
 import React from 'react'
 import Categories from './categories';
 import { useContext } from "react";
-import MenuContextProvider, { MenuContext } from '../context/MenuContext';
 // import axios from "axios";
 // import {useEffect, useState } from "react";
 
 function Menus(props) {
-    const test = useContext(MenuContext);
-    console.log(test);
 
   return (
     <div>
@@ -22,10 +19,16 @@ function Menus(props) {
                         type="checkbox" 
                         checked={menu.status ? "checked": ""} 
                         value = {menu.id}
-                        // onChange={ props.menusFunction(menu.id, menu.name, menu.status )}
+                        onChange={ props.updateFunction}
                         />
                          {menu.name} 
+                         <button
+                         onClick={props.deleteFunction}
+                         value = {menu.id}>
+                            X
+                         </button>
                          <Categories menu_id={menu.id}/>
+                        
                     </li>
                     </div>
                 )
